@@ -20,6 +20,7 @@ public:
     Server();
     ~Server();
     void initServer(int port);
+    void ircFlow();
 
 };
 
