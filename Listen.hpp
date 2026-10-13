@@ -2,8 +2,13 @@
 #define LISTEN_HPP
 
 #include <unistd.h>
+#include <iostream>
 #include <sys/socket.h>
 #include "ISocket.hpp"
+
+using std::endl;
+using std::cout;
+using std::cerr;
 
 class Listen : public ISocket
 {
@@ -17,7 +22,7 @@ public:
     ~Listen();
 
     TYPE getType();
-    int getFd();
+    int  getFd();
     void setFd(int fd);
 
     void createSocket();

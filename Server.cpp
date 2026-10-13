@@ -2,24 +2,31 @@
 
 Server::Server()
 {
-
+    epollFd = -1;
+    listenObject = NULL;
+    events.reserve(100);
 }
 
 Server::~Server()
 {
-    if (epollFd != -1)
-        close(epollFd);
     
-    // epoll_ctl(epollFd, EPOLL_CTL_DEL, listenObject->getFd(), NULL);
-
-    delete listenObject;
-
+    if (listenObject)
+    {
+        epoll_ctl(epollFd, EPOLL_CTL_DEL, listenObject->getFd(), NULL);
+        delete listenObject;
+    }
+    
     for (size_t i = 0; i < clientObjects.size(); i++)
     {
         if (clientObjects[i])
+        {
+            epoll_ctl(epollFd, EPOLL_CTL_DEL, clientObjects[i]->getFd(), NULL);
             delete clientObjects[i];
+        }
     }
     
+    if (epollFd != -1)
+        close(epollFd);
 }
 
 void Server::initServer(int port)
@@ -35,15 +42,48 @@ void Server::initServer(int port)
     event.data.ptr = listenObject;
 
     epollFd = epoll_create(0);
+    
+    if (epollFd == -1)
+        throw "epoll create error";
 
     if (epoll_ctl(epollFd, EPOLL_CTL_ADD, listenObject->getFd(), &event) == -1)
         throw "epoll ctrl error";
 }
+
 void Server::ircFlow()
 {
-    
     while (true)
     {
+        int activeEvents = epoll_wait(epollFd, &events[0], events.size(), -1);
+
+        for (size_t i = 0; i < activeEvents; i++)
+        {
+            ISocket* socket = (ISocket*) events[i].data.ptr;
+
+            if (events[i].events & EPOLLIN)
+            {
+                if (socket->getType() == LISTEN)
+                {
+                    int fd = listenObject->acceptConnection();
+
+                    if (fd != -1)
+                    {
+                        Client* client = new Client(fd);
+                        epoll_event event;
+                        event.events = EPOLLIN;
+                        event.data.ptr = client;
+
+                        epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &event);
+                    }
+                }
+                else
+                {
+                    Client* cli = (Client *) socket;
+                    cli->drawWater();
+                    cli->parseWater();
+                }
+            }
+        }
         
 
     }

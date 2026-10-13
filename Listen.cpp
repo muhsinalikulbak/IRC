@@ -68,8 +68,9 @@ int  Listen::acceptConnection()
     socklen_t len = sizeof(addr);
 
     int clientFd = accept(listenFd, &addr, &len);
-
+    
     if (clientFd == -1)
-        throw "accept error";
+        cerr << "Accept error" << endl;
+    return clientFd;
 }
 

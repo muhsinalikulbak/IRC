@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unistd.h>
+#include <sys/socket.h>
 #include "ISocket.hpp"
 
 using std::string;
@@ -22,6 +23,10 @@ public:
     TYPE getType();
     int getFd();
     void setFd(int fd);
+
+    void drawWater();
+    void toPourWater();
+    void parseWater();
     
 };
 
