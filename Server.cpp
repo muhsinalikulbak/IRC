@@ -80,8 +80,25 @@ void Server::ircFlow()
                 {
                     Client* cli = (Client *) socket;
                     cli->drawWater();
-                    cli->parseWater();
+                    if (cli->parseWater())
+                    {
+                        events[i].events = EPOLLOUT;
+                        epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
+                    }
                 }
+            }
+            else if (events[i].events & EPOLLOUT)
+            {
+                
+                if (socket->getType() == CLIENT)
+                {
+                    Client* cli = (Client *) socket;
+
+                    cli->toPourWater();
+
+
+                }
+
             }
         }
         

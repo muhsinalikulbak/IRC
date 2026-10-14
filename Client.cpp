@@ -45,19 +45,36 @@ void Client::drawWater()
     }
     else if (bytes == -1)
     {
-        
+        perror("recv error");
     }
 }
-void Client::parseWater()
+
+
+void Client::toPourWater()
 {
-    if (recvBuffer.empty() || recvBuffer.size() < 1)
-        return;
+    int bytes = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
+
+    if (bytes > 0)
+    {
+        sendBuffer.erase(0, bytes);
+    }
+    else if (bytes == -1)
+    {
+        perror("send error");
+    }
+}
+
+bool Client::parseWater()
+{
+    if (recvBuffer.empty() || recvBuffer.size() < 2)
+        return false;
     
     size_t pos = recvBuffer.find("\r\n");
 
     if (pos == std::string::npos)
-        return;
+        return false;
     
     sendBuffer.append(recvBuffer.substr(0, pos));
-    recvBuffer.erase(0, pos);
+    recvBuffer.erase(0, pos + 2);
+    return true;
 }

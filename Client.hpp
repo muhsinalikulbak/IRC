@@ -26,7 +26,7 @@ public:
 
     void drawWater();
     void toPourWater();
-    void parseWater();
+    bool parseWater();
     
 };
 
