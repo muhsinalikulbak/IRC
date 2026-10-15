@@ -5,6 +5,7 @@
 #include "Client.hpp"
 #include "Listen.hpp"
 #include <sys/epoll.h>
+#include <cerrno>
 
 using std::runtime_error;
 using std::vector;

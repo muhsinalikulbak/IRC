@@ -4,7 +4,7 @@ Server::Server()
 {
     epollFd = -1;
     listenObject = NULL;
-    events.reserve(100);
+    events.resize(100);
 }
 
 Server::~Server()
@@ -57,7 +57,12 @@ void Server::ircFlow()
     while (true)
     {
         int activeEvents = epoll_wait(epollFd, &events[0], events.size(), -1);
-    
+        
+        if (activeEvents == -1)
+        {
+            throw runtime_error(strerror(errno));
+        }
+
         for (int i = 0; i < activeEvents; i++)
         {
             ISocket* socket = (ISocket*) events[i].data.ptr;

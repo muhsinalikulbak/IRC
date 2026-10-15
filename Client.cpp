@@ -79,8 +79,8 @@ bool Client::parseWater()
 
     if (pos == std::string::npos)
         return false;
-        
-    sendBuffer.append(recvBuffer.substr(0, pos));
+    
+    sendBuffer.append(recvBuffer.substr(0, pos) + "\r\n"); /// dünya
     recvBuffer.erase(0, pos + 2);
     return true;
 }
