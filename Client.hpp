@@ -25,7 +25,7 @@ public:
     void setFd(int fd);
 
     void drawWater();
-    void toPourWater();
+    bool toPourWater();
     bool parseWater();
     
 };

@@ -60,48 +60,47 @@ void Server::ircFlow()
         {
             ISocket* socket = (ISocket*) events[i].data.ptr;
 
-            if (events[i].events & EPOLLIN)
+            if (events[i].events & EPOLLIN && socket->getType() == LISTEN)
             {
-                if (socket->getType() == LISTEN)
+                int fd = listenObject->acceptConnection();
+
+                if (fd != -1)
                 {
-                    int fd = listenObject->acceptConnection();
+                    Client* client = new Client(fd);
+                    epoll_event event;
+                    event.events = EPOLLIN;
+                    event.data.ptr = client;
 
-                    if (fd != -1)
-                    {
-                        Client* client = new Client(fd);
-                        epoll_event event;
-                        event.events = EPOLLIN;
-                        event.data.ptr = client;
-
-                        epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &event);
-                    }
+                    epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &event);
                 }
-                else
+            }
+            else if (events[i].events & EPOLLIN && socket->getType() == CLIENT)
+            {
+                Client* cli = (Client *) socket;
+                cli->drawWater();
+                if (cli->parseWater())
                 {
-                    Client* cli = (Client *) socket;
-                    cli->drawWater();
-                    if (cli->parseWater())
-                    {
-                        events[i].events = EPOLLOUT;
-                        epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
-                    }
+                    events[i].events = EPOLLOUT;
+                    epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
                 }
             }
             else if (events[i].events & EPOLLOUT)
             {
-                
                 if (socket->getType() == CLIENT)
                 {
                     Client* cli = (Client *) socket;
-
-                    cli->toPourWater();
-
-
+                    if (cli->toPourWater())
+                    {
+                        events[i].events = EPOLLIN;
+                        epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
+                    }
                 }
-
+                else
+                {
+                    perror ("Error listen socket");
+                }
             }
         }
-        
 
     }
     

@@ -50,18 +50,25 @@ void Client::drawWater()
 }
 
 
-void Client::toPourWater()
+bool Client::toPourWater()
 {
     int bytes = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
 
     if (bytes > 0)
     {
         sendBuffer.erase(0, bytes);
+        return sendBuffer.size() == 0;
+    }
+    else if (bytes == 0)
+    {
+        return true;
     }
     else if (bytes == -1)
     {
         perror("send error");
+        return false;
     }
+    return false;
 }
 
 bool Client::parseWater()
