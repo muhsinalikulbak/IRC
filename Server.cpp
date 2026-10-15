@@ -9,7 +9,7 @@ Server::Server()
 
 Server::~Server()
 {
-    
+
     if (listenObject)
     {
         epoll_ctl(epollFd, EPOLL_CTL_DEL, listenObject->getFd(), NULL);
@@ -32,22 +32,24 @@ Server::~Server()
 void Server::initServer(int port)
 {
     listenObject = new Listen(port);
-
+    
     listenObject->createSocket();
     listenObject->bindSocket();
     listenObject->listenSocket();
-
+    
+    
     epoll_event event;
     event.events = EPOLLIN;
     event.data.ptr = listenObject;
-
-    epollFd = epoll_create(0);
     
+    epollFd = epoll_create1(0);
     if (epollFd == -1)
-        throw "epoll create error";
-
+    {
+        throw runtime_error("epoll create error");
+    }
+    
     if (epoll_ctl(epollFd, EPOLL_CTL_ADD, listenObject->getFd(), &event) == -1)
-        throw "epoll ctrl error";
+        throw runtime_error("epoll ctrl error");
 }
 
 void Server::ircFlow()
@@ -55,8 +57,8 @@ void Server::ircFlow()
     while (true)
     {
         int activeEvents = epoll_wait(epollFd, &events[0], events.size(), -1);
-
-        for (size_t i = 0; i < activeEvents; i++)
+    
+        for (int i = 0; i < activeEvents; i++)
         {
             ISocket* socket = (ISocket*) events[i].data.ptr;
 
@@ -103,5 +105,4 @@ void Server::ircFlow()
         }
 
     }
-    
 }

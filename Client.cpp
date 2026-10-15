@@ -32,7 +32,6 @@ void Client::setFd(int fd)
     clientFd = fd;
 }
 
-
 void Client::drawWater()
 {
     char buffer[4096];
@@ -72,7 +71,7 @@ bool Client::toPourWater()
 }
 
 bool Client::parseWater()
-{
+{    
     if (recvBuffer.empty() || recvBuffer.size() < 2)
         return false;
     
@@ -80,7 +79,7 @@ bool Client::parseWater()
 
     if (pos == std::string::npos)
         return false;
-    
+        
     sendBuffer.append(recvBuffer.substr(0, pos));
     recvBuffer.erase(0, pos + 2);
     return true;

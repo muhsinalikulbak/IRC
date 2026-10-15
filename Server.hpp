@@ -6,6 +6,7 @@
 #include "Listen.hpp"
 #include <sys/epoll.h>
 
+using std::runtime_error;
 using std::vector;
  
 class Server

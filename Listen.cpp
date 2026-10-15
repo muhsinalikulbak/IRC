@@ -33,17 +33,27 @@ void Listen::setFd(int fd)
 void Listen::createSocket()
 {
     listenFd = socket(AF_INET, SOCK_STREAM, 0);
+
     if (listenFd == -1)
-        throw "socket error";
+        throw runtime_error("socket error");
+    
+    int opt = 1;
+    fcntl(listenFd, F_SETFL, O_NONBLOCK);
+    setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 }
 
 void Listen::bindSocket()
 {
-    sockaddr addr;
-    addr.sa_family = AF_INET;
+    struct sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
 
-    if (bind(listenFd, &addr, sizeof(addr)) == -1)
-        throw "bind error";
+    addr.sin_addr.s_addr = INADDR_ANY;
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(listenPort);
+
+
+    if (bind(listenFd, (sockaddr*)&addr, sizeof(addr)) == -1)
+        throw runtime_error ("bind error");
 }
 void Listen::listenSocket()
 {
@@ -58,7 +68,7 @@ void Listen::listenSocket()
 
     // İçeride boş yer varsa, fifo mantığıyla sıraya ilk giren accept olur.
     if (listen(listenFd, SOMAXCONN) == -1)
-        throw ("listen error");
+        throw runtime_error("listen error");
 }
 
 int  Listen::acceptConnection()
@@ -71,6 +81,8 @@ int  Listen::acceptConnection()
     
     if (clientFd == -1)
         cerr << "Accept error" << endl;
+
+    fcntl(listenFd, F_SETFL, O_NONBLOCK);
     return clientFd;
 }
 

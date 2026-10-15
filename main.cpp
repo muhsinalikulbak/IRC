@@ -1,7 +1,7 @@
 #include <iostream>
 #include <inttypes.h>
 #include "Server.hpp"
-
+#include <cerrno>
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -25,7 +25,8 @@ int main(int argc, char const *argv[])
     try
     {
         Server serv;
-
+        serv.initServer(port);
+        serv.ircFlow();
     }
     catch(const std::exception& e)
     {
