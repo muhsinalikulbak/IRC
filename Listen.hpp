@@ -8,6 +8,8 @@
 #include <netinet/in.h>
 #include "ISocket.hpp"
 #include <fcntl.h>
+#include <cerrno>
+
 using std::endl;
 using std::cout;
 using std::cerr;

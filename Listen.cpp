@@ -35,7 +35,7 @@ void Listen::createSocket()
     listenFd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (listenFd == -1)
-        throw runtime_error("socket error");
+        throw runtime_error(strerror(errno));
     
     int opt = 1;
     fcntl(listenFd, F_SETFL, O_NONBLOCK);
@@ -53,7 +53,7 @@ void Listen::bindSocket()
 
 
     if (bind(listenFd, (sockaddr*)&addr, sizeof(addr)) == -1)
-        throw runtime_error ("bind error");
+        throw runtime_error (strerror(errno));
 }
 void Listen::listenSocket()
 {
@@ -68,21 +68,19 @@ void Listen::listenSocket()
 
     // İçeride boş yer varsa, fifo mantığıyla sıraya ilk giren accept olur.
     if (listen(listenFd, SOMAXCONN) == -1)
-        throw runtime_error("listen error");
+        throw runtime_error(strerror(errno));
 }
 
 int  Listen::acceptConnection()
 {
-    sockaddr addr;
-    addr.sa_family = AF_INET;
-    socklen_t len = sizeof(addr);
+    // Client IP'sini loglamak istersem sockaddr_in ile parametreyi doldur
 
-    int clientFd = accept(listenFd, &addr, &len);
+    int clientFd = accept(listenFd, NULL, NULL);
     
     if (clientFd == -1)
         cerr << "Accept error" << endl;
 
-    fcntl(listenFd, F_SETFL, O_NONBLOCK);
+    fcntl(clientFd, F_SETFL, O_NONBLOCK);
     return clientFd;
 }
 

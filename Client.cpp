@@ -40,7 +40,7 @@ void Client::drawWater()
 
     if (bytes > 0)
     {
-        recvBuffer.append(buffer);
+        recvBuffer.append(buffer, bytes);
     }
     else if (bytes == -1)
     {
@@ -80,7 +80,7 @@ bool Client::parseWater()
     if (pos == std::string::npos)
         return false;
     
-    sendBuffer.append(recvBuffer.substr(0, pos) + "\r\n"); /// dünya
+    sendBuffer.append(recvBuffer.substr(0, pos + 2)); 
     recvBuffer.erase(0, pos + 2);
     return true;
 }

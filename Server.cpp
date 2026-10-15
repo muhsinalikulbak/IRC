@@ -45,11 +45,11 @@ void Server::initServer(int port)
     epollFd = epoll_create1(0);
     if (epollFd == -1)
     {
-        throw runtime_error("epoll create error");
+        throw runtime_error(strerror(errno));
     }
     
     if (epoll_ctl(epollFd, EPOLL_CTL_ADD, listenObject->getFd(), &event) == -1)
-        throw runtime_error("epoll ctrl error");
+        throw runtime_error(strerror(errno));
 }
 
 void Server::ircFlow()
