@@ -15,6 +15,13 @@ private:
     string recvBuffer;
     string sendBuffer;
 
+    string nick;
+    string username;
+    
+    bool PASS;
+    bool NICK;
+    bool USER;
+
 public:
     Client(int fd);
     Client();

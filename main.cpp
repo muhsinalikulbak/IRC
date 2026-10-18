@@ -8,11 +8,17 @@ using std::endl;
 
 int main(int argc, char const *argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
         cerr << "Invalid Argument !" << endl;
         return 1;
     }
+    if (strlen(argv[2]) == 0)
+    {
+        cerr << "Invalid Password !" << endl;
+        return 1;
+    }
+
     char* end;
     int port = strtoimax(argv[1], &end, 10);
     
@@ -24,7 +30,7 @@ int main(int argc, char const *argv[])
 
     try
     {
-        Server serv;
+        Server serv(argv[2]);
         serv.initServer(port);
         serv.ircFlow();
     }

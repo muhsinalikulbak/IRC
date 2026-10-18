@@ -1,7 +1,8 @@
 #include "Server.hpp"
 
-Server::Server()
+Server::Server(string password)
 {
+    this->password = password;
     epollFd = -1;
     listenObject = NULL;
     events.resize(100);

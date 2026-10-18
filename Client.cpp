@@ -5,8 +5,13 @@ Client::Client(int fd)
     clientFd = fd;
     recvBuffer = "";
     sendBuffer = "";
-    
+    nick = "";
+    username = "";
+    PASS = false;
+    NICK = false;
+    USER = false;
 }
+
 Client::Client()
 {
     clientFd = -1;
@@ -22,6 +27,7 @@ TYPE Client::getType()
 {
     return CLIENT;
 }
+
 int Client::getFd()
 {
     return clientFd;
@@ -32,6 +38,7 @@ void Client::setFd(int fd)
     clientFd = fd;
 }
 
+// Suyu Kernel Recv Buffer'dan çek
 void Client::drawWater()
 {
     char buffer[4096];
@@ -48,7 +55,7 @@ void Client::drawWater()
     }
 }
 
-
+// Suyu Kernel Send Buffer'a dök
 bool Client::toPourWater()
 {
     int bytes = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
@@ -69,7 +76,7 @@ bool Client::toPourWater()
     }
     return false;
 }
-
+// Çektiğin suyu kontrol et
 bool Client::parseWater()
 {    
     if (recvBuffer.empty() || recvBuffer.size() < 2)

@@ -6,10 +6,12 @@
 #include "Listen.hpp"
 #include <sys/epoll.h>
 #include <cerrno>
+#include <map>
 
 using std::runtime_error;
 using std::vector;
- 
+using std::map;
+
 class Server
 {
 private:
@@ -18,8 +20,12 @@ private:
     Listen* listenObject;
     int epollFd;
 
+    map<string, Client*> nickMap;
+
+    string password;
+
 public:
-    Server();
+    Server(string password);
     ~Server();
     void initServer(int port);
     void ircFlow();
