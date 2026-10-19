@@ -2,6 +2,7 @@
 #include <inttypes.h>
 #include "Server.hpp"
 #include <cerrno>
+
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -24,7 +25,7 @@ int main(int argc, char const *argv[])
     
     if (*end != '\0' || errno == ERANGE)
     {
-        cerr << "Invalid Argument !" << endl;
+        cerr << "Invalid Port Number !" << endl;
         return 1;
     }
 
@@ -38,7 +39,5 @@ int main(int argc, char const *argv[])
     {
         std::cerr << e.what() << '\n';
     }
-    
-    
     return 0;
 }

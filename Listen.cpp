@@ -38,8 +38,10 @@ void Listen::createSocket()
         throw runtime_error(strerror(errno));
     
     int opt = 1;
-    fcntl(listenFd, F_SETFL, O_NONBLOCK);
-    setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if (fcntl(listenFd, F_SETFL, O_NONBLOCK))
+        throw runtime_error(strerror(errno));
+    if (setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+        throw runtime_error(strerror(errno));
 }
 
 void Listen::bindSocket()
@@ -78,9 +80,17 @@ int  Listen::acceptConnection()
     int clientFd = accept(listenFd, NULL, NULL);
     
     if (clientFd == -1)
-        cerr << "Accept error" << endl;
+    {
+        perror("Accept error ");
+        return clientFd;
+    }
 
-    fcntl(clientFd, F_SETFL, O_NONBLOCK);
+    if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1)
+    {
+        perror("Set nonblocking error");
+        close(clientFd);
+        return -1;
+    }
     return clientFd;
 }
 

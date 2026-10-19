@@ -21,6 +21,7 @@ private:
     bool PASS;
     bool NICK;
     bool USER;
+    bool isRegister;
 
 public:
     Client(int fd);

@@ -21,7 +21,6 @@ private:
     int epollFd;
 
     map<string, Client*> nickMap;
-
     string password;
 
 public:

@@ -80,6 +80,7 @@ void Server::ircFlow()
                     event.data.ptr = client;
 
                     epoll_ctl(epollFd, EPOLL_CTL_ADD, fd, &event);
+                    clientObjects.push_back(client);
                 }
             }
             else if (events[i].events & EPOLLIN && socket->getType() == CLIENT)
