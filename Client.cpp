@@ -82,18 +82,27 @@ State Client::toPourWater()
     }
     return ERROR;
 }
-// Çektiğin suyu kontrol et
-bool Client::parseWater()
+// Çektiğin suyu kontrol et kaç adet line var
+bool Client::getLines(vector<string>& lines)
 {    
     if (recvBuffer.empty() || recvBuffer.size() < 2)
         return false;
-    
+
     size_t pos = recvBuffer.find("\r\n");
 
-    if (pos == std::string::npos)
-        return false;
+    while (pos != std::string::npos)
+    {
+        lines.push_back(recvBuffer.substr(0, pos));
+        recvBuffer.erase(0, pos + 2);
+        
+        pos = recvBuffer.find("\r\n");
+    }
     
-    sendBuffer.append(recvBuffer.substr(0, pos + 2)); 
-    recvBuffer.erase(0, pos + 2);
-    return true;
+    return lines.size() > 0;
+}
+
+
+bool Client::isRegistered()
+{
+    return PASS && NICK && USER;
 }

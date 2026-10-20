@@ -5,8 +5,10 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include "ISocket.hpp"
+#include <vector>
 
 using std::string;
+using std::vector;
 
 enum State {COMPLETE, INCOMPLETE, ERROR};
 
@@ -23,8 +25,7 @@ private:
     bool PASS;
     bool NICK;
     bool USER;
-    bool isRegistered;
-
+    
 public:
     Client(int fd);
     Client();
@@ -36,7 +37,8 @@ public:
 
     State toPourWater();
     bool drawWater();
-    bool parseWater();
+    bool getLines(vector<string>& lines);
+    bool isRegistered();
     
 };
 

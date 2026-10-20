@@ -86,12 +86,13 @@ void Server::ircFlow()
             else if (events[i].events & EPOLLIN && socket->getType() == CLIENT)
             {
                 Client* cli = (Client *) socket;
+
                 if (cli->drawWater())
                 {
-                    if (cli->parseWater())
+                    vector<string> lines;
+                    if (cli->getLines(lines))
                     {
-                        events[i].events = EPOLLOUT;
-                        epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
+                        
                     }
                 }
                 else
