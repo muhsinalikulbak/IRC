@@ -86,23 +86,32 @@ void Server::ircFlow()
             else if (events[i].events & EPOLLIN && socket->getType() == CLIENT)
             {
                 Client* cli = (Client *) socket;
-                cli->drawWater();
-                if (cli->parseWater())
+                if (cli->drawWater())
                 {
-                    events[i].events = EPOLLOUT;
-                    epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
+                    if (cli->parseWater())
+                    {
+                        events[i].events = EPOLLOUT;
+                        epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
+                    }
                 }
+                else
+                    unregisterClient(cli);
+
             }
             else if (events[i].events & EPOLLOUT)
             {
                 if (socket->getType() == CLIENT)
                 {
                     Client* cli = (Client *) socket;
-                    if (cli->toPourWater())
+                    State st = cli->toPourWater();
+
+                    if (st == COMPLETE)
                     {
                         events[i].events = EPOLLIN;
                         epoll_ctl(epollFd, EPOLL_CTL_MOD, cli->getFd(), &events[i]);
                     }
+                    else if (st == ERROR) 
+                        unregisterClient(cli);
                 }
                 else
                 {
@@ -112,4 +121,19 @@ void Server::ircFlow()
         }
 
     }
+}
+
+void Server::unregisterClient(Client* cli)
+{
+    // Channel olunca, kayıtlı olduğu kanallardan da silinecek
+
+    epoll_ctl(epollFd, EPOLL_CTL_DEL, cli->getFd(), NULL);
+    vector<Client*>::iterator it = find(clientObjects.begin(), clientObjects.end(), cli);
+
+    if (it != clientObjects.end())
+    {
+        *it = clientObjects.back();
+        clientObjects.pop_back();
+    }
+    delete cli;
 }

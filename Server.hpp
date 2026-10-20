@@ -7,10 +7,12 @@
 #include <sys/epoll.h>
 #include <cerrno>
 #include <map>
+#include <algorithm>
 
 using std::runtime_error;
 using std::vector;
 using std::map;
+using std::find;
 
 class Server
 {
@@ -23,11 +25,15 @@ private:
     map<string, Client*> nickMap;
     string password;
 
+
+    void unregisterClient(Client* cli);
+
 public:
     Server(string password);
     ~Server();
     void initServer(int port);
     void ircFlow();
+    
 
 };
 

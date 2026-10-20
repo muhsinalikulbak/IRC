@@ -8,6 +8,8 @@
 
 using std::string;
 
+enum State {COMPLETE, INCOMPLETE, ERROR};
+
 class Client : public ISocket
 {
 private:
@@ -21,7 +23,7 @@ private:
     bool PASS;
     bool NICK;
     bool USER;
-    bool isRegister;
+    bool isRegistered;
 
 public:
     Client(int fd);
@@ -29,11 +31,11 @@ public:
     ~Client();
 
     TYPE getType();
-    int getFd();
+    int  getFd();
     void setFd(int fd);
 
-    void drawWater();
-    bool toPourWater();
+    State toPourWater();
+    bool drawWater();
     bool parseWater();
     
 };

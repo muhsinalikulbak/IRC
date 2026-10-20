@@ -39,7 +39,7 @@ void Client::setFd(int fd)
 }
 
 // Suyu Kernel Recv Buffer'dan çek
-void Client::drawWater()
+bool Client::drawWater()
 {
     char buffer[4096];
 
@@ -48,33 +48,39 @@ void Client::drawWater()
     if (bytes > 0)
     {
         recvBuffer.append(buffer, bytes);
+        return true;
     }
     else if (bytes == -1)
     {
         perror("recv error");
+        return false;
     }
+    else if (bytes == 0)
+        return false;   // Karşı tarafın kapatma sinyali.
+
+    return false;
 }
 
 // Suyu Kernel Send Buffer'a dök
-bool Client::toPourWater()
+State Client::toPourWater()
 {
     int bytes = send(clientFd, sendBuffer.c_str(), sendBuffer.size(), 0);
 
     if (bytes > 0)
     {
         sendBuffer.erase(0, bytes);
-        return sendBuffer.size() == 0;
+        return sendBuffer.size() == 0 ? COMPLETE : INCOMPLETE;
     }
     else if (bytes == 0)
     {
-        return true;
+        return COMPLETE;
     }
     else if (bytes == -1)
     {
         perror("send error");
-        return false;
+        return ERROR;
     }
-    return false;
+    return ERROR;
 }
 // Çektiğin suyu kontrol et
 bool Client::parseWater()
