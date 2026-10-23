@@ -92,7 +92,13 @@ void Server::ircFlow()
                     vector<string> lines;
                     if (cli->getLines(lines))
                     {
-                        
+                        if (cli->isRegistered())
+                            Parser::commandParser(cli, lines);
+                        else
+                        {
+                            size_t idx = 0;
+                            vector<int> codes = Parser::registerParser(cli, lines, password, idx);
+                        }
                     }
                 }
                 else
@@ -120,7 +126,6 @@ void Server::ircFlow()
                 }
             }
         }
-
     }
 }
 

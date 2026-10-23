@@ -35,6 +35,20 @@ public:
     int  getFd();
     void setFd(int fd);
 
+    bool getPassState();
+    bool getNickState();
+    bool getUserState();
+
+
+    const string& getNick();
+    const string& getUser();
+    void setNick(const string& nick);
+    void setUser(const string& user);
+
+    void setPassState(bool state);
+    void setNickState(bool state);
+    void setUserState(bool state);
+
     State toPourWater();
     bool drawWater();
     bool getLines(vector<string>& lines);

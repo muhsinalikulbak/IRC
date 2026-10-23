@@ -8,6 +8,7 @@
 #include <cerrno>
 #include <map>
 #include <algorithm>
+#include "Parser.hpp"
 
 using std::runtime_error;
 using std::vector;

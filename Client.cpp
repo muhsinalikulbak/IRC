@@ -94,7 +94,7 @@ bool Client::getLines(vector<string>& lines)
     {
         lines.push_back(recvBuffer.substr(0, pos));
         recvBuffer.erase(0, pos + 2);
-        
+    
         pos = recvBuffer.find("\r\n");
     }
     
@@ -105,4 +105,53 @@ bool Client::getLines(vector<string>& lines)
 bool Client::isRegistered()
 {
     return PASS && NICK && USER;
+}
+
+
+
+bool Client::getPassState()
+{
+    return PASS;
+}
+bool Client::getNickState()
+{
+    return NICK;
+}
+bool Client::getUserState()
+{
+    return USER;
+}
+
+void Client::setPassState(bool state)
+{
+    PASS = state;
+}
+void Client::setNickState(bool state)
+{
+    NICK = state;
+}
+void Client::setUserState(bool state)
+{
+    USER = state;
+}
+
+
+
+const string& Client::getNick()
+{
+    return nick;
+}
+
+const string& Client::getUser()
+{
+    return username;
+}
+
+void Client::setNick(const string& nick)
+{
+    this->nick = nick;
+}
+void Client::setUser(const string& user)
+{
+    this->username = user;
 }
