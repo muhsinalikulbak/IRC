@@ -97,7 +97,8 @@ void Server::ircFlow()
                         else
                         {
                             size_t idx = 0;
-                            vector<int> codes = Parser::registerParser(cli, lines, password, idx);
+                            vector<pair<int, string> > codes = Parser::registerParser(cli, lines, password, idx);
+
                         }
                     }
                 }

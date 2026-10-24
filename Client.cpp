@@ -90,6 +90,10 @@ bool Client::getLines(vector<string>& lines)
 
     size_t pos = recvBuffer.find("\r\n");
 
+    // Gelen satır \r\n bitsin ya da bitmesin, genel olarak
+    // bir uzunlık sınırı olmalı bir satır o uzunluk satırını geçerse
+    // Bir aksiyom al.
+    
     while (pos != std::string::npos)
     {
         lines.push_back(recvBuffer.substr(0, pos));

@@ -1,43 +1,98 @@
 #include "Parser.hpp"
 
 
-// Bazı hata kodlarını eklenecek
-vector<int> Parser::registerParser(Client* cli, vector<string>& lines, const string& pass, size_t& idx)
+// isValidNick'i tamamla
+// nick geçerli ise map'de var mı kontrol et fonksiyon dışında yap
+
+static bool isValidNick(const string& str)
+{
+    if (str.size() > 9)
+        return false;
+    
+    string allowed = "[]\\`^_{|}";
+    char ch = str[0];
+
+    if (!std::isalpha(ch) && (std::isdigit(ch) || ch == '-'))
+        return false;
+    
+    // Nick 9 özel karakter '-'  rakam ve harfleri içerir
+    // Sadece ilk karakter rakam tire ve 9 özel karakter dışında bir şey olamaz.
+    
+    for (size_t i = 0; i < str.size(); i++)
+    {
+        if (std::isalpha(str[i]) || std::isdigit(str[i]) || str[i] == '-')
+            continue;
+        else if (allowed.find(str[i]) == string::npos)
+            return false;
+    }
+    return true;
+}
+
+vector<pair<int, string> > Parser::registerParser(Client* cli, vector<string>& lines, const string& pass, size_t& idx, map<string, Client*>& nickMap)
 {
     size_t i = 0;
-    vector<int> codes;
+    vector<pair<int, string> > codes;
 
     for (; i < lines.size(); i++)
     {
         if (cli->isRegistered())
+        {
+            // 001 Welcome
+            codes.push_back(std::make_pair(1, ""));
             break;
+        }
         
         vector<string> line = split(lines[i], ' ');
         
-        if (line.size() < 2)
+        if (line.size() == 0)
             continue;
         
-        if (!cli->getPassState())
+        if (line[0] == "PASS")
         {
-            if (line[0] != "PASS")
-                continue;
-            
-            if (pass == line[1])
+            if (line.size() < 2 || line[1].empty())
             {
-                cli->setPassState(true);
+                codes.push_back(std::make_pair(461, "PASS"));
+                continue;
+            }
+
+            if (!cli->getPassState())
+            {
+                if (pass == line[1])
+                    cli->setPassState(true);
+                else if (cli->getNickState() && cli->getUserState())
+                {
+                    codes.push_back(std::make_pair(464, ""));
+                    return codes;
+                }
             }
         }
-        else if (!cli->getNickState() && line[0] == "NICK")
+        else if (line[0] == "NICK")
         {
-            cli->setNickState(true);
-            cli->setNick(line[1]);
+            if (line.size() < 2 || line[1].empty())
+                codes.push_back(std::make_pair(431, ""));
+            else if (!isValidNick(line[1]))
+                codes.push_back(std::make_pair(432, line[1]));
+            else if (nickMap.find(line[1]) != nickMap.end())
+                codes.push_back(std::make_pair(433, line[1]));
+            else
+            {
+                cli->setNick(line[1]);
+                cli->setNickState(true);
+            }
         }
-        else if (!cli->getUserState() && line.size() > 3 && line[0] == "USER")
+        else if (line[0] == "USER")
         {
-            // Burada real name de eklemem gerekiyor, ve indexler şu an yanlış bunu düzelt
-            cli->setUserState(true);
-            cli->setUser(line[1]);
+            if (!cli->getUserState())
+            {
+
+            }
+            else
+            {
+
+            }
         }
+        else
+            codes.push_back(std::make_pair(451, ""));
     }
     idx = i;
     return codes;
@@ -46,7 +101,8 @@ vector<int> Parser::registerParser(Client* cli, vector<string>& lines, const str
 
 void Parser::commandParser(Client* cli, vector<string>& lines)
 {
-
+    // Eğer command yerine pass nick  tarzı kayıt verisi gelirse
+    // 462 DÖN
 }
 
 vector<string> Parser::split(string& str, char delimiter)

@@ -6,7 +6,9 @@
 #include <sys/socket.h>
 #include "ISocket.hpp"
 #include <vector>
+#include <utility>
 
+using std::pair;
 using std::string;
 using std::vector;
 
