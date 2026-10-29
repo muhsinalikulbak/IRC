@@ -10,7 +10,6 @@ Server::Server(string password)
 
 Server::~Server()
 {
-
     if (listenObject)
     {
         epoll_ctl(epollFd, EPOLL_CTL_DEL, listenObject->getFd(), NULL);
@@ -98,7 +97,9 @@ void Server::ircFlow()
                         {
                             size_t idx = 0;
                             vector<pair<int, string> > codes = Parser::registerParser(cli, lines, password, idx, nickMap);
-
+                            
+                            // Register oldu mu ?  Olduysa ve başka satırı varsa commandParser'a yönlendir
+                            // QUIT mi olacak ? 
                             
                         }
                     }

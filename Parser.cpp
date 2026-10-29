@@ -1,6 +1,4 @@
 #include "Parser.hpp"
-
-
 static bool isValidNick(const string& str)
 {
     if (str.size() > 9)
@@ -69,7 +67,7 @@ vector<pair<int, string> > Parser::registerParser(Client* cli, vector<string>& l
                 codes.push_back(std::make_pair(431, ""));
             else if (!isValidNick(line[1]))
                 codes.push_back(std::make_pair(432, line[1]));
-            else if (nickMap.find(line[1]) != nickMap.end()) // Burada nick için tolower uygula, irc'de nick küçük-büyük hard duyarsızdır.
+            else if (nickMap.find(utils::toLower(line[1])) != nickMap.end())
                 codes.push_back(std::make_pair(433, line[1]));
             else
             {

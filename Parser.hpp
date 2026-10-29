@@ -4,6 +4,7 @@
 #include "Client.hpp"
 #include <cctype>
 #include <map>
+#include "utils.hpp"
 
 using std::map;
 
