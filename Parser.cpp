@@ -1,5 +1,28 @@
 #include "Parser.hpp"
-static bool isValidNick(const string& str)
+
+bool Parser::isValidUser(const string& str)
+{
+    if (str.size() == 0 || str.size() > 9)
+        return false;
+    
+    if (str.find('\n') != string::npos || str.find('\0') != string::npos || str.find('\r') != string::npos)
+        return false;
+
+    if (str.find(' ') != string::npos || str.find('@') != string::npos || str.find('!') != string::npos)
+        return false;
+    
+    return true;
+}
+
+bool Parser::isValidReal(const string& str)
+{
+    if (str.size() == 0 || str.size() > 9)
+        return false;
+    
+    return str.find('\n') != string::npos || str.find('\0') != string::npos || str.find('\r') != string::npos;
+}
+
+bool Parser::isValidNick(const string& str)
 {
     if (str.size() > 9)
         return false;
@@ -84,18 +107,16 @@ vector<pair<int, string> > Parser::registerParser(Client* cli, vector<string>& l
                 {
                     string str = lines[i].substr(0, pos);
                     line = split(str, ' ');
-                    line.push_back(lines[i].substr(pos));
+                    line.push_back(lines[i].substr(pos +  1));
                 }
 
-                if (line.size() < 5)
+                if (line.size() < 5 || !isValidUser(line[1]) || !isValidReal(line[4]))
                 {
                     codes.push_back(std::make_pair(461, "USER"));
                     continue;
                 }
-
-                cli->setUser(line[1]);
                 cli->setRealName(line[4]);
-                
+                cli->setUser(line[1]);
             }
             else
             {

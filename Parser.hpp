@@ -14,6 +14,9 @@ private:
 
     static vector<string>split(string& str, char delimiter);
     static bool isValidNick(const string& nick);
+    static bool isValidUser(const string& str);
+    static bool isValidReal(const string& str);
+
 
 public:
     Parser(/* args */);
