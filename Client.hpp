@@ -23,6 +23,7 @@ private:
 
     string nick;
     string username;
+    string realname;
     
     bool PASS;
     bool NICK;
@@ -44,6 +45,9 @@ public:
 
     const string& getNick();
     const string& getUser();
+    const string& getRealName();
+
+    void setRealName(const string& realName);
     void setNick(const string& nick);
     void setUser(const string& user);
 

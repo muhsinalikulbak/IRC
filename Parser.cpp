@@ -7,7 +7,7 @@ static bool isValidNick(const string& str)
     string allowed = "[]\\`^_{|}";
     char ch = str[0];
 
-    if (!std::isalpha(ch) && (std::isdigit(ch) || ch == '-'))
+    if (!std::isalpha(ch) && allowed.find(ch) == string::npos)
         return false;
     
     // Nick 9 özel karakter '-'  rakam ve harfleri içerir
@@ -79,11 +79,27 @@ vector<pair<int, string> > Parser::registerParser(Client* cli, vector<string>& l
         {
             if (!cli->getUserState())
             {
+                size_t pos = lines[i].find(':');
+                if (pos != string::npos)
+                {
+                    string str = lines[i].substr(0, pos);
+                    line = split(str, ' ');
+                    line.push_back(lines[i].substr(pos));
+                }
 
+                if (line.size() < 5)
+                {
+                    codes.push_back(std::make_pair(461, "USER"));
+                    continue;
+                }
+
+                cli->setUser(line[1]);
+                cli->setRealName(line[4]);
+                
             }
             else
             {
-
+                codes.push_back(std::make_pair(462, "USER"));
             }
         }
         else

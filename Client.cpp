@@ -126,6 +126,8 @@ bool Client::getUserState()
     return USER;
 }
 
+
+
 void Client::setPassState(bool state)
 {
     PASS = state;
@@ -151,6 +153,11 @@ const string& Client::getUser()
     return username;
 }
 
+const string& Client::getRealName()
+{
+    return realname;
+}
+
 void Client::setNick(const string& nick)
 {
     this->nick = nick;
@@ -158,4 +165,9 @@ void Client::setNick(const string& nick)
 void Client::setUser(const string& user)
 {
     this->username = user;
+}
+
+void Client::setRealName(const string& realName)
+{
+    this->realname = realname;
 }
